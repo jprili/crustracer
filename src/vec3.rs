@@ -103,6 +103,7 @@ impl ops::MulAssign<f64> for Vec3 {
     }
 }
 
+
 impl ops::Div<f64> for Vec3 {
     type Output = Self;
     #[inline(always)]
@@ -126,6 +127,24 @@ impl ops::DivAssign<f64> for Vec3 {
                 self.z() / scale
             ]
         }
+    }
+}
+
+impl ops::Mul<Vec3> for f64 {
+    type Output = Vec3;
+
+    #[inline(always)]
+    fn mul(self, vec3: Vec3) -> Self::Output {
+        vec3 * self
+    }
+}
+
+impl ops::Div<Vec3> for f64 {
+    type Output = Vec3;
+
+    #[inline(always)]
+    fn div(self, vec3: Vec3) -> Self::Output {
+        vec3 / self
     }
 }
 
