@@ -2,9 +2,13 @@ use log::{ info };
 use std::io;
 use std::io::Write;
 
+mod vec3;
+mod colour;
+
+use vec3::{ Vec3 }; 
+
 const WIDTH:  i32 = 256;
 const HEIGHT: i32 = 256;
-const NORM:   f32 = 255.999;  
 
 fn main() {
     println!("P3\n{WIDTH} {HEIGHT}\n255");
@@ -13,15 +17,13 @@ fn main() {
         info!("\rScanlines remaining: {}", HEIGHT - j);
         match io::stderr().flush() { _ => () };
         for i in 0..HEIGHT {
-            let r = (i as f32) / ((WIDTH - 1) as f32);
-            let g = (j as f32) / ((WIDTH - 1) as f32);
-            let b = 0.0; 
-
-            let ir: i32 = (NORM * r) as i32;
-            let ig: i32 = (NORM * g) as i32;
-            let ib: i32 = (NORM * b) as i32;
-
-            println!("{ir} {ig} {ib}")
+            colour::write_colour(
+                Vec3::new(
+                    i as f64 / ((WIDTH  - 1) as f64),
+                    j as f64 / ((HEIGHT - 1) as f64),
+                    0.0
+                )
+            );
         }
     }
 
