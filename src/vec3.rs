@@ -1,5 +1,6 @@
 use std::ops;
 
+#[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
     e: [f64; 3]
 }
@@ -43,6 +44,33 @@ impl ops::AddAssign for Vec3 {
                 self.x() + vec3.x(), 
                 self.y() + vec3.y(), 
                 self.z() + vec3.z()
+            ]
+        }
+    }
+}
+
+impl ops::Sub for Vec3 {
+    type Output = Self;
+
+    #[inline(always)]
+    fn sub(self, vec3: Self) -> Self::Output {
+        Self {
+            e: [ 
+                self.x() - vec3.x(), 
+                self.y() - vec3.y(), 
+                self.z() - vec3.z()
+            ]
+        }
+    }
+}
+
+impl ops::SubAssign for Vec3 {
+    fn sub_assign(&mut self, vec3: Self) {
+        *self = Self {
+            e: [ 
+                self.x() - vec3.x(), 
+                self.y() - vec3.y(), 
+                self.z() - vec3.z()
             ]
         }
     }
