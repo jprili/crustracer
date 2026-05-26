@@ -9,7 +9,19 @@ use std::io::Write;
 use vec3::{ Vec3 }; 
 use ray::{ Ray };
 
+fn hit_sphere(centre: &Vec3, rad: f64, ray: &Ray) -> bool {
+    let oc: &Vec3 = &(*centre - ray.org);
+    let a: f64   = ray.dir.mag_sq();
+    let b: f64   = -2.0 * ray.dir.dot(*oc);
+    let c: f64   = oc.mag_sq() - (rad * rad);
+    (b * b - (4. * a * c)) >= 0.
+}
+
 fn ray_colour(ray: Ray) -> Vec3 {
+    if hit_sphere(&Vec3::new(0., 0., -1.), 0.5, &ray) {
+        return Vec3::new(1., 0., 0.);
+    }
+
     let a = (Vec3::unit_vec(&ray.dir).y() + 1.) * 0.5;
     (Vec3::new(1., 1., 1.) * (1. - a))
         + (Vec3::new(0.5, 0.7, 1.) * a)
