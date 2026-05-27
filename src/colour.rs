@@ -1,4 +1,4 @@
-use crate::vec3::{ Vec3 };
+use crate::constants::Vec3;
 
 pub fn write_colour(colour: Vec3) {
     let norm: f64 = 255.999;

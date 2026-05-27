@@ -1,15 +1,15 @@
-mod vec3;
+mod constants;
 mod colour;
+mod vec3;
 mod ray;
 
 use log::{ info };
 use std::io;
 use std::io::Write;
 
-use vec3::{ Vec3 }; 
-use ray::{ Ray };
+use constants::{ Vec3, Ray };
 
-fn hit_sphere(centre: Vec3, rad: f64, ray: &Ray) -> f64 {
+fn hit_sphere(centre: constants::Vec3, rad: f64, ray: &Ray) -> f64 {
     let oc: Vec3 = centre - ray.org;
     let a: f64   = ray.dir.mag_sq();
     let h: f64   = ray.dir.dot(oc);
