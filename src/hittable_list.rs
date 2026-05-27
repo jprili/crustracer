@@ -30,7 +30,7 @@ impl<'a, T: Hittable> Hittable for HittableList<'a, T> {
         r_tmax: f64, 
         rec: &mut HitRecord
         ) -> bool {
-        let record: &mut HitRecord = rec;
+        let record: &mut HitRecord = &mut HitRecord::new();
         let mut hit_anything:   bool = false; 
         let mut closest_so_far: f64  = r_tmax;
 

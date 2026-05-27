@@ -12,6 +12,15 @@ pub struct HitRecord {
 }
 
 impl HitRecord {
+    pub fn new() -> Self {
+        Self {
+            p: Vec3::new(0., 0., 0.),
+            norm: Vec3::new(0., 0., 0.), 
+            t: 0.,
+            front_face: false
+        }
+    }
+
     pub fn set_face_normal(&mut self, ray: Ray, out_norm: Vec3) {
         self.front_face = ray.dir.dot(out_norm) < 0.;
         self.norm = 
