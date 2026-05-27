@@ -8,7 +8,7 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    fn new(centre: Vec3, rad: f64) -> Self {
+    pub fn new(centre: Vec3, rad: f64) -> Self {
         Self {
             centre: centre, 
             rad: if rad > 0. { rad } else { 0. }

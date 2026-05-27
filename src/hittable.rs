@@ -1,5 +1,4 @@
-use crate::vec3::{ Vec3 };
-use crate::ray::{ Ray };
+use crate::constants::*;
 
 #[derive(Clone, Copy)]
 pub struct HitRecord {

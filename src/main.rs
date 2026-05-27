@@ -1,38 +1,17 @@
-mod constants;
-mod colour;
-mod vec3;
-mod ray;
-
 use log::{ info };
 use std::io;
 use std::io::Write;
 
-use constants::{ Vec3, Ray };
+use crustracer::constants::*;
+use crustracer::hittable::{ HitRecord, Hittable };
+use crustracer::hittable_list::HittableList;
+use crustracer::sphere::Sphere;
+use crustracer::colour;
 
-fn hit_sphere(centre: constants::Vec3, rad: f64, ray: &Ray) -> f64 {
-    let oc: Vec3 = centre - ray.org;
-    let a: f64   = ray.dir.mag_sq();
-    let h: f64   = ray.dir.dot(oc);
-    let c: f64   = oc.mag_sq() - (rad * rad);
-    let d: f64 = h * h - (a * c);
-    if d <= 0. { -1.0 } else { 
-        (h - d.sqrt()) / a
-    }
-}
-
-fn ray_colour(ray: Ray) -> Vec3 {
-    let centre: Vec3 = Vec3::new(0., 0., -1.);
-    let t = hit_sphere(centre, 0.5, &ray);
-    if t > 0. { 
-        let normal: Vec3 = 
-            (ray.at(t) - centre).unit_vec();
-        return 0.5 * (
-            Vec3::new(
-                normal.x() + 1.,
-                normal.y() + 1.,
-                normal.z() + 1.
-            )
-        )
+fn ray_colour<T: Hittable>(ray: Ray, world: &T) -> Vec3 {
+    let rec: &mut HitRecord = &mut HitRecord::new();
+    if world.hit(ray, 0., INF, rec) {
+        return 0.5 * (rec.norm + Vec3::new(1., 1., 1.))
     }
 
     let a = (Vec3::unit_vec(&ray.dir).y() + 1.) * 0.5;
@@ -69,6 +48,14 @@ fn main() {
             (px_du.clone() + px_dv.clone()) * 0.5
         );
 
+    let mut world: HittableList = HittableList::new();
+    world.add(Box::new(Sphere::new(
+        Vec3::new(0.,0., -1.), 0.5
+    )));
+    world.add(Box::new(Sphere::new(
+        Vec3::new(0.,-100.5, -1.), 100.
+    )));
+
     // region RENDER
     println!("P3\n{img_w} {img_h}\n255");
 
@@ -84,7 +71,10 @@ fn main() {
             let ray_dir = px_to_write - camera_centre.clone();
 
             colour::write_colour(
-                ray_colour(Ray::new(camera_centre, ray_dir))
+                ray_colour(
+                    Ray::new(camera_centre, ray_dir),
+                    &world
+                )
             );
         }
     }

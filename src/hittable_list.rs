@@ -2,11 +2,11 @@ use std::vec::{ Vec };
 use crate::ray::{ Ray };
 use crate::hittable::{ HitRecord, Hittable };
 
-pub struct HittableList<'a, T: Hittable> {
-    objects: Vec<&'a T> 
+pub struct HittableList {
+    objects: Vec<Box<dyn Hittable>> 
 }
 
-impl<'a, T: Hittable> HittableList<'a, T> {
+impl HittableList {
     pub fn new() -> Self {
         Self {
             objects: Vec::new()
@@ -17,12 +17,12 @@ impl<'a, T: Hittable> HittableList<'a, T> {
         self.objects.clear();
     }
 
-    pub fn add(&mut self, h: &'a T) {
+    pub fn add(&mut self, h: Box<dyn Hittable>) {
         self.objects.push(h);
     }
 }
 
-impl<'a, T: Hittable> Hittable for HittableList<'a, T> {
+impl Hittable for HittableList {
     fn hit(
         &self, 
         ray: Ray, 
