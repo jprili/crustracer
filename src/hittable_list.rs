@@ -38,7 +38,6 @@ impl<'a, T: Hittable> Hittable for HittableList<'a, T> {
             if obj.hit(ray, r_tmin, closest_so_far, record) {
                 hit_anything   = true;
                 closest_so_far = record.t;
-                // TODO: fix the borrowing problem here
                 rec.set(record.clone());
             }
         }
