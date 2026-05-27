@@ -10,7 +10,7 @@ use crustracer::colour;
 
 fn ray_colour<T: Hittable>(ray: Ray, world: &T) -> Vec3 {
     let rec: &mut HitRecord = &mut HitRecord::new();
-    if world.hit(ray, 0., INF, rec) {
+    if world.hit(ray, Interval::new(0., INF), rec) {
         return 0.5 * (rec.norm + Vec3::new(1., 1., 1.))
     }
 

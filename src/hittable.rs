@@ -36,8 +36,7 @@ pub trait Hittable {
     fn hit(
         &self,
         ray: Ray, 
-        r_tmin: f64, 
-        r_tmax: f64, 
+        interval: Interval,
         rec: &mut HitRecord
     ) -> bool; 
 }

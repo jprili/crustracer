@@ -1,6 +1,7 @@
 pub mod vec3;
 pub mod ray;
 pub mod colour;
+pub mod interval;
 
 pub mod sphere;
 

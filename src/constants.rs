@@ -2,6 +2,7 @@ pub use std::f64::{ consts };
 
 pub use crate::vec3::Vec3;
 pub use crate::ray::Ray;
+pub use crate::interval::Interval;
 
 pub const PI:  f64 = consts::PI;
 pub const INF: f64 = f64::INFINITY;

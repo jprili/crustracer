@@ -1,5 +1,5 @@
 use std::vec::{ Vec };
-use crate::ray::{ Ray };
+use crate::constants::*;
 use crate::hittable::{ HitRecord, Hittable };
 
 pub struct HittableList {
@@ -26,16 +26,15 @@ impl Hittable for HittableList {
     fn hit(
         &self, 
         ray: Ray, 
-        r_tmin: f64, 
-        r_tmax: f64, 
+        interval: Interval,
         rec: &mut HitRecord
         ) -> bool {
         let record: &mut HitRecord = &mut HitRecord::new();
         let mut hit_anything:   bool = false; 
-        let mut closest_so_far: f64  = r_tmax;
+        let mut closest_so_far: f64  = interval.max;
 
         for obj in &self.objects {
-            if obj.hit(ray, r_tmin, closest_so_far, record) {
+            if obj.hit(ray, Interval::new(interval.min, closest_so_far), record) {
                 hit_anything   = true;
                 closest_so_far = record.t;
                 rec.set(record.clone());
