@@ -13,6 +13,8 @@ fn main() {
         Vec3::new(0.,-100.5, -1.), 100.
     )));
 
-    let camera: Camera = Camera::new(16. / 9., 400);
+    let camera: Camera = Camera::new(
+        16. / 9., 400, 100
+    );
     camera.render(&world);
 }

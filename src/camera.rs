@@ -9,7 +9,9 @@ use crate::constants::*;
 
 pub struct Camera {
     pub aspect_ratio: f64,
-    pub img_w:        i32, // px
+    pub img_w:        i32,       // px
+    pub sample_per_px: i32,      // 1 / px
+    px_sample_scale:   f64,      // scale factor
     img_h: i32,                  // px
     centre: Vec3,                // camera centre
     origin: Vec3,                // camera origin
@@ -29,7 +31,27 @@ impl Camera {
         + (Vec3::new(0.5, 0.7, 1.) * a)
     }
 
-    pub fn new(asp: f64, img_w: i32) -> Self {
+    fn sample_square() -> Vec3 {
+        Vec3::new(
+            rand_unit() - 0.5, 
+            rand_unit() - 0.5, 
+            0.
+        )
+    }
+
+    fn get_ray(&self, i: i32, j: i32) -> Ray {
+        let sample = Self::sample_square();
+        let px_sample = self.origin 
+            + ((i as f64 + sample.x()) * self.px_du)
+            + ((j as f64 + sample.y()) * self.px_dv);
+
+        Ray::new(
+            self.centre, 
+            px_sample - self.centre
+        )
+    } 
+
+    pub fn new(asp: f64, img_w: i32, s_p_px: i32) -> Self {
         let img_h = (img_w as f64 / asp) as i32;
         let focal_length: f64 = 1.;
         let v_h: f64 = 2.;
@@ -54,7 +76,9 @@ impl Camera {
             centre: centre,
             px_du: px_du,
             px_dv: px_dv,
-            origin: v_ul + (0.5 * (px_du + px_dv))
+            origin: v_ul + (0.5 * (px_du + px_dv)),
+            sample_per_px: s_p_px,
+            px_sample_scale: 1. / s_p_px as f64
         }
     }
 
@@ -66,19 +90,12 @@ impl Camera {
             info!("\rScanlines remaining: {}", self.img_h - j);
             match io::stderr().flush() { _ => () };
             for i in 0..self.img_w { 
-                let px_to_write: Vec3 = 
-                    self.origin
-                    + (self.px_du * (i as f64)) 
-                    + (self.px_dv * (j as f64));
-
-                let ray_dir = px_to_write - self.centre;
-
-                colour::write_colour(
-                    self.ray_colour(
-                        Ray::new( self.centre, ray_dir),
-                        world
-                    )
-                );
+                let mut px_colour: Vec3 = Vec3::new(0., 0., 0.);
+                for _ in 0..self.sample_per_px {
+                    let ray = self.get_ray(i, j);
+                    px_colour += self.ray_colour(ray, world);
+                }
+                colour::write_colour(self.px_sample_scale * px_colour);
             }
         }
 
