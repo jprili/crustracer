@@ -11,6 +11,7 @@ pub struct Camera {
     pub aspect_ratio: f64,
     pub img_w:        i32,       // px
     pub sample_per_px: i32,      // 1 / px
+    pub max_rec_depth: i32,
     px_sample_scale:   f64,      // scale factor
     img_h: i32,                  // px
     centre: Vec3,                // camera centre
@@ -20,12 +21,12 @@ pub struct Camera {
 }
 
 impl Camera {
-    fn ray_colour<T: Hittable>(&self, ray: Ray, world: &T) -> Vec3 {
+    fn ray_colour<T: Hittable>(&self, ray: Ray, depth: i32, world: &T) -> Vec3 {
         let rec: &mut HitRecord = &mut HitRecord::new();
         if world.hit(ray, Interval::new(0., INF), rec) {
             let dir = Vec3::rand_on_hemisphere(rec.norm);
             return 0.5 * self.ray_colour(
-                Ray::new(rec.p, dir), world
+                Ray::new(rec.p, dir), depth - 1, world
             )
         }
 
@@ -74,6 +75,7 @@ impl Camera {
 
         Self {
             aspect_ratio: asp,
+            max_rec_depth: 50, 
             img_w: img_w,
             img_h: img_h,
             centre: centre,
@@ -96,7 +98,7 @@ impl Camera {
                 let mut px_colour: Vec3 = Vec3::new(0., 0., 0.);
                 for _ in 0..self.sample_per_px {
                     let ray = self.get_ray(i, j);
-                    px_colour += self.ray_colour(ray, world);
+                    px_colour += self.ray_colour(ray, self.max_rec_depth, world);
                 }
                 colour::write_colour(self.px_sample_scale * px_colour);
             }
