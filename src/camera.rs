@@ -1,7 +1,7 @@
 use std::io;
 use std::io::Write;
 
-use log::info;
+use log::{ info };
 
 use crate::hittable::{ Hittable, HitRecord };
 use crate::colour;
@@ -22,17 +22,22 @@ pub struct Camera {
 
 impl Camera {
     fn ray_colour<T: Hittable>(&self, ray: Ray, depth: i32, world: &T) -> Vec3 {
+        if depth <= 0 {
+            return Vec3::new(0., 0., 0.)
+        }
         let rec: &mut HitRecord = &mut HitRecord::new();
-        if world.hit(ray, Interval::new(0., INF), rec) {
-            let dir = Vec3::rand_on_hemisphere(rec.norm);
+        if world.hit(ray, Interval::new(0.001, INF), rec) {
+            let dir = 
+                Vec3::rand_on_hemisphere(rec.norm)
+                + Vec3::rand_vec3_unit();
             return 0.5 * self.ray_colour(
                 Ray::new(rec.p, dir), depth - 1, world
             )
         }
 
-    let a = (Vec3::unit_vec(&ray.dir).y() + 1.) * 0.5;
-    (Vec3::new(1., 1., 1.) * (1. - a))
-        + (Vec3::new(0.5, 0.7, 1.) * a)
+        let a = (Vec3::unit_vec(&ray.dir).y() + 1.) * 0.5;
+        (Vec3::new(1., 1., 1.) * (1. - a))
+            + (Vec3::new(0.5, 0.7, 1.) * a)
     }
 
     fn sample_square() -> Vec3 {
