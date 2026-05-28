@@ -1,4 +1,5 @@
 use std::ops;
+use crate::constants::{ rand_range, rand_unit };
 
 #[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
@@ -201,6 +202,43 @@ impl Vec3 {
                 self.z() / mag 
             ]
         }
+    }
+
+    #[inline]
+    pub fn rand_vec3() -> Vec3 {
+        Vec3::new(
+            rand_unit(),
+            rand_unit(),
+            rand_unit()
+        )
+    }
+
+    #[inline]
+    pub fn rand_vec3_range(lo: f64, hi: f64) -> Vec3 {
+        Vec3::new(
+            rand_range(lo, hi),
+            rand_range(lo, hi),
+            rand_range(lo, hi)
+        )
+    }
+
+    #[inline]
+    pub fn rand_vec3_unit() -> Vec3 {
+        loop {
+            let p = Self::rand_vec3_range(-1., 1.);
+            let mag_sq: f64 = p.mag_sq();
+            if 1e-160 <= mag_sq && mag_sq <= 1. {
+                return p / mag_sq.sqrt()
+            }
+        }
+    }
+
+    #[inline]
+    pub fn rand_on_hemisphere(normal: Vec3) -> Vec3 {
+        let unit_vec = Vec3::rand_vec3_unit();
+        if unit_vec.dot(normal) > 0. {
+            unit_vec
+        } else { -unit_vec }
     }
 }
 

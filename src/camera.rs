@@ -23,7 +23,10 @@ impl Camera {
     fn ray_colour<T: Hittable>(&self, ray: Ray, world: &T) -> Vec3 {
         let rec: &mut HitRecord = &mut HitRecord::new();
         if world.hit(ray, Interval::new(0., INF), rec) {
-            return 0.5 * (rec.norm + Vec3::new(1., 1., 1.))
+            let dir = Vec3::rand_on_hemisphere(rec.norm);
+            return 0.5 * self.ray_colour(
+                Ray::new(rec.p, dir), world
+            )
         }
 
     let a = (Vec3::unit_vec(&ray.dir).y() + 1.) * 0.5;
