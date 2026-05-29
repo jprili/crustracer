@@ -27,12 +27,16 @@ impl Camera {
         }
         let rec: &mut HitRecord = &mut HitRecord::new();
         if world.hit(ray, Interval::new(0.001, INF), rec) {
-            let dir = 
-                Vec3::rand_on_hemisphere(rec.norm)
-                + Vec3::rand_vec3_unit();
-            return 0.5 * self.ray_colour(
-                Ray::new(rec.p, dir), depth - 1, world
-            )
+            let r_out: &mut Ray  = &mut Ray::default();
+            let att:   &mut Vec3 = &mut Vec3::default();
+            if rec.mat.scatter(ray, rec.clone(), att, r_out) {
+                let a = att.clone();
+                let b = self.ray_colour(*r_out, depth - 1, world);
+                // println!("# att {} {} {}", a.x(), a.y(), a.z());
+                // println!("# ray {} {} {}", b.x(), b.y(), b.z());
+                return a * b;
+            }
+            return Vec3::default(); 
         }
 
         let a = (Vec3::unit_vec(&ray.dir).y() + 1.) * 0.5;

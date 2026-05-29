@@ -1,16 +1,21 @@
+use std::rc::Rc;
+
 use crate::constants::*;
 use crate::hittable::{ HitRecord, Hittable };
+use crate::material::Material;
 
 pub struct Sphere {
     centre: Vec3,
-    rad:    f64
+    rad:    f64,
+    mat:    Rc<dyn Material>
 }
 
 impl Sphere {
-    pub fn new(centre: Vec3, rad: f64) -> Self {
+    pub fn new(centre: Vec3, rad: f64, mat: Rc<dyn Material>) -> Self {
         Self {
             centre: centre, 
-            rad: if rad > 0. { rad } else { 0. }
+            rad: if rad > 0. { rad } else { 0. },
+            mat: mat
         }
     }
 }
@@ -45,6 +50,7 @@ impl Hittable for Sphere {
             ray,
             (rec.p - self.centre) / self.rad
         );
+        rec.mat = self.mat.clone();
         return true
     }
 }

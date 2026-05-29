@@ -1,13 +1,18 @@
-use crate::constants::*;
+use std::rc::Rc;
+use std::option::Option;
 
-#[derive(Clone, Copy)]
+use crate::constants::*;
+use crate::material::{ Lambertian, Material };
+
+#[derive(Clone)]
 pub struct HitRecord {
     pub p:    Vec3,
     pub norm: Vec3,
 
     //  at which t off the ray was the hit recorded
     pub t:    f64, 
-    pub front_face: bool
+    pub front_face: bool,
+    pub mat: Rc<dyn Material>
 }
 
 impl HitRecord {
@@ -16,7 +21,8 @@ impl HitRecord {
             p: Vec3::new(0., 0., 0.),
             norm: Vec3::new(0., 0., 0.), 
             t: 0.,
-            front_face: false
+            front_face: false,
+            mat: Rc::new(Lambertian::new(Vec3::default()))
         }
     }
 
@@ -29,6 +35,7 @@ impl HitRecord {
     pub fn set(&mut self, record: HitRecord) {
         self.p = record.p;
         self.norm = record.norm;
+        self.mat  = record.mat;
     }
 }
 

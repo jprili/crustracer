@@ -131,6 +131,20 @@ impl ops::DivAssign<f64> for Vec3 {
     }
 }
 
+impl ops::Mul<Vec3> for Vec3 {
+    type Output = Vec3;
+
+    #[inline(always)]
+    fn mul(self, vec3: Vec3) -> Self::Output {
+        Vec3::new(
+            self.e[0] * *vec3.x(),
+            self.e[1] * *vec3.y(),
+            self.e[2] * *vec3.z()
+        )
+    }
+}
+
+
 impl ops::Mul<Vec3> for f64 {
     type Output = Vec3;
 
@@ -239,6 +253,39 @@ impl Vec3 {
         if unit_vec.dot(normal) > 0. {
             unit_vec
         } else { -unit_vec }
+    }
+
+    pub fn is_near_zero(&self) -> bool {
+        let s = 1e-8;
+        let check = |x: f64| x.abs() < s; 
+        check(self.e[0]) && check(self.e[1]) && check(self.e[2])
+    }
+
+    #[inline]
+    pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
+        v - (2. * v.dot(n) * n)
+    }
+
+    pub fn set_x(&mut self, x: f64) {
+        self.e[0] = x
+    }
+
+    pub fn set_y(&mut self, y: f64) {
+        self.e[1] = y
+    }
+
+    pub fn set_z(&mut self, z: f64) {
+        self.e[2] = z
+    }
+
+    pub fn set(&mut self, i: f64, j: f64, k: f64) {
+        self.set_x(i);
+        self.set_y(j);
+        self.set_z(k);
+    }
+
+    pub fn set_vec(&mut self, v: Vec3) {
+        self.set(*v.x(), *v.y(), *v.z())
     }
 }
 
