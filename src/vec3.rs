@@ -266,6 +266,18 @@ impl Vec3 {
         v - (2. * v.dot(n) * n)
     }
 
+    #[inline]
+    pub fn refract(v: Vec3, n: Vec3, ratio: f64) -> Vec3 {
+        let cos_th: f64 = f64::min(
+            Vec3::dot(&-v, n),
+             1.
+        );
+        let r_out_perp: Vec3 = ratio * (v + cos_th * n);
+        let r_out_para: Vec3 = 
+            -f64::sqrt(f64::abs(1. - r_out_perp.mag_sq())) * n;
+        r_out_perp + r_out_para
+    }
+
     pub fn set_x(&mut self, x: f64) {
         self.e[0] = x
     }

@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use crustracer::constants::*;
 use crustracer::hittable_list::HittableList;
-use crustracer::material::{ Material, Lambertian, Metal };
+use crustracer::material::{ Dielectric, Lambertian, Material, Metal };
 use crustracer::sphere::Sphere;
 use crustracer::camera::Camera;
 
@@ -14,13 +14,18 @@ fn main() {
         Lambertian::new(Vec3::new(0.8, 0.8, 0.))
     );
     let m_centre: Rc<dyn Material> = Rc::new(
-        Lambertian::new(Vec3::new(0.1, 0.2, 0.5))
+        Lambertian::new(
+            Vec3::new(0.1, 0.2, 0.5)
+        )
     );
     let m_left: Rc<dyn Material> = Rc::new(
-        Metal::new(Vec3::new(0.8, 0.8, 0.8))
+        Dielectric::new(
+            // Vec3::new(0.8, 0.8, 0.8), 
+            1.5
+        )
     );
     let m_right: Rc<dyn Material> = Rc::new(
-        Metal::new(Vec3::new(0.8, 0.6, 0.2))
+        Metal::new(Vec3::new(0.8, 0.6, 0.2), 1.)
     );
 
     world.add(Box::new(Sphere::new(
@@ -28,15 +33,15 @@ fn main() {
         m_ground
     )));
     world.add(Box::new(Sphere::new(
-        Vec3::new(0.,0., -1.), 0.5,
+        Vec3::new(0.,0., -1.2), 0.5,
         m_centre
     )));
     world.add(Box::new(Sphere::new(
-        Vec3::new(-1.0,0.0, -1.), 0.5,
+        Vec3::new(-1.,0., -1.), 0.5,
         m_left
     )));
     world.add(Box::new(Sphere::new(
-        Vec3::new(1.0,0.0, -1.), 0.5,
+        Vec3::new(1.,0., -1.), 0.5,
         m_right
     )));
 

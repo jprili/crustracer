@@ -1,5 +1,4 @@
 use std::rc::Rc;
-use std::option::Option;
 
 use crate::constants::*;
 use crate::material::{ Lambertian, Material };

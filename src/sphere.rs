@@ -45,7 +45,7 @@ impl Hittable for Sphere {
         } 
 
         rec.t = root;
-        rec.p = (*(&ray)).at(rec.t);
+        rec.p = ray.at(rec.t);
         rec.set_face_normal(
             ray,
             (rec.p - self.centre) / self.rad
