@@ -255,6 +255,20 @@ impl Vec3 {
         } else { -unit_vec }
     }
 
+    #[inline]
+    pub fn rand_in_unit_disk() -> Vec3 {
+        loop {
+            let p: Vec3 = Vec3::new(
+                rand_range(-1., 1.),
+                rand_range(-1., 1.),
+                0.
+            );
+            if p.mag_sq() < 1. {
+                return p;
+            }
+        }
+    }
+
     pub fn is_near_zero(&self) -> bool {
         let s = 1e-8;
         let check = |x: f64| x.abs() < s; 

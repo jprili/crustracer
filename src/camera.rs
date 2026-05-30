@@ -17,6 +17,8 @@ pub struct Camera {
     pub l_from: Vec3,
     pub l_at:   Vec3,
     pub v_up:   Vec3,
+    pub defocus_angle: f64,
+    pub focus_dist: f64,
 
     px_sample_scale:   f64,      // scale factor
     img_h: i32,                  // px
@@ -26,7 +28,9 @@ pub struct Camera {
     px_dv:  Vec3,                // height-normalised px size
     u: Vec3,
     v: Vec3,
-    w: Vec3
+    w: Vec3,
+    defocus_u: Vec3,
+    defocus_v: Vec3
 }
 
 impl Camera {
@@ -59,15 +63,28 @@ impl Camera {
         )
     }
 
+    fn defocus_disk_sample(&self) -> Vec3 {
+        let p = Vec3::rand_in_unit_disk();
+        self.centre 
+            + (p[0] * self.defocus_u) 
+            + (p[1] * self.defocus_v)
+    }
+
     fn get_ray(&self, i: i32, j: i32) -> Ray {
         let sample = Self::sample_square();
         let px_sample = self.origin 
             + ((i as f64 + sample.x()) * self.px_du)
             + ((j as f64 + sample.y()) * self.px_dv);
 
+        let r_origin = if self.defocus_angle <= 0. {
+            self.centre
+        } else {
+            self.defocus_disk_sample()
+        };
+
         Ray::new(
-            self.centre, 
-            px_sample - self.centre
+            r_origin, 
+            px_sample - r_origin
         )
     } 
 
@@ -80,16 +97,17 @@ impl Camera {
         l_from: Vec3,
         l_at: Vec3,
         v_up: Vec3,
+        focus_dist: f64,
+        defocus_angle: f64
     ) -> Self {
         let img_h = (img_w as f64 / asp) as i32;
 
         let centre: Vec3 = l_from;
 
-        let focal_length: f64 = (l_from - l_at).mag();
         let theta = deg_to_rad(vfov);
         let h = f64::tan(theta / 2.);
 
-        let v_h: f64 = 2. * h * focal_length;
+        let v_h: f64 = 2. * h * focus_dist;
         let v_w: f64 = v_h * (img_w as f64 / img_h as f64);
 
         let w = (l_from - l_at).unit_vec();
@@ -104,8 +122,11 @@ impl Camera {
 
         let v_ul = 
             centre 
-            - (focal_length * w)
+            - (focus_dist * w)
             - (v_u / 2.) - (v_v / 2.);
+
+        let defocus_rad = focus_dist 
+            * f64::tan(deg_to_rad(defocus_angle / 2.));
 
         Self {
             aspect_ratio: asp,
@@ -125,6 +146,10 @@ impl Camera {
             w: w,
             u: u,
             v: v,
+            focus_dist: focus_dist,
+            defocus_angle: defocus_angle,
+            defocus_u: u * defocus_rad,
+            defocus_v: v * defocus_rad
         }
     }
 

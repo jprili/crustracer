@@ -61,7 +61,9 @@ fn main() {
         20.,
         Vec3::new(-2., 2., 1.),
         Vec3::new(0., 0., -1.),
-        Vec3::new(0., 1., 0.)
+        Vec3::new(0., 1., 0.),
+        3.4,
+        10.
     );
 
     camera.render(&world);
