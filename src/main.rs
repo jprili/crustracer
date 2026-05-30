@@ -21,7 +21,8 @@ fn main() {
     let m_left: Rc<dyn Material> = Rc::new(
         Dielectric::new(
             // Vec3::new(0.8, 0.8, 0.8), 
-            1.5
+            // 0.8
+            1.50
         )
     );
     let m_right: Rc<dyn Material> = Rc::new(

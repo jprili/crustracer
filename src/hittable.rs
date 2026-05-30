@@ -34,6 +34,8 @@ impl HitRecord {
     pub fn set(&mut self, record: HitRecord) {
         self.p = record.p;
         self.norm = record.norm;
+        self.t = record.t;
+        self.front_face = record.front_face;
         self.mat  = record.mat;
     }
 }

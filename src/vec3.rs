@@ -269,7 +269,7 @@ impl Vec3 {
     #[inline]
     pub fn refract(v: Vec3, n: Vec3, ratio: f64) -> Vec3 {
         let cos_th: f64 = f64::min(
-            Vec3::dot(&-v, n),
+            -Vec3::dot(&v, n),
              1.
         );
         let r_out_perp: Vec3 = ratio * (v + cos_th * n);

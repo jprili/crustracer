@@ -96,8 +96,6 @@ impl Dielectric {
     }
 }
 
-// BUG: bug somewhere here... 
-// the refraction doesnt work properly.
 impl Material for Dielectric {
     fn scatter(
         &self,
@@ -114,15 +112,12 @@ impl Material for Dielectric {
 
         let rf = 
             Vec3::refract(
-                Vec3::unit_vec(&r_in.dir), // direction of in ray
+                r_in.dir.unit_vec(), // direction of in ray
                 rec.norm,            // normal of hit surf
                 ri               // ref idx
             );
 
-        r_out.set_org(rec.p);
-        r_out.set_dir(
-            rf
-        );
+        *r_out =  Ray { org: rec.p, dir: rf };
         true
     }
 }
