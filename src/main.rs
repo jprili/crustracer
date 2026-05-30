@@ -20,9 +20,12 @@ fn main() {
     );
     let m_left: Rc<dyn Material> = Rc::new(
         Dielectric::new(
-            // Vec3::new(0.8, 0.8, 0.8), 
-            // 0.8
-            1.50
+            1.5
+        )
+    );
+    let m_bubble: Rc<dyn Material> = Rc::new(
+        Dielectric::new(
+            1. / 1.50
         )
     );
     let m_right: Rc<dyn Material> = Rc::new(
@@ -40,6 +43,10 @@ fn main() {
     world.add(Box::new(Sphere::new(
         Vec3::new(-1.,0., -1.), 0.5,
         m_left
+    )));
+    world.add(Box::new(Sphere::new(
+        Vec3::new(-1.,0., -1.), 0.4,
+        m_bubble
     )));
     world.add(Box::new(Sphere::new(
         Vec3::new(1.,0., -1.), 0.5,

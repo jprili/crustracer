@@ -20,7 +20,7 @@ Generates a random f64 in the range
 */
 #[inline]
 pub fn rand_unit() -> f64 {
-    rand::rng().random_range(0.0..=1.)
+    rand::rng().random_range(0.0..1.)
 }
 
 /* 
@@ -29,5 +29,5 @@ Generates a random f64 in the range
 */
 #[inline]
 pub fn rand_range(lo: f64, hi: f64) -> f64 {
-    rand::rng().random_range(lo..=hi)
+    rand::rng().random_range(lo..hi)
 }

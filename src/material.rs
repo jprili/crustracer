@@ -94,6 +94,12 @@ impl Dielectric {
     pub fn get_ri(&self) -> f64 {
         self.ref_idx
     }
+
+    fn reflectance(cos: f64, ri: f64) -> f64 {
+        let r0 = (1. - ri) / (1. + ri);
+        let r1 = r0 * r0;
+        r1 + ((1. - r1) * (1. - cos).powi(5))
+    }
 }
 
 impl Material for Dielectric {
@@ -109,13 +115,20 @@ impl Material for Dielectric {
         let ri: f64 = if rec.front_face {
             1. / self.ref_idx
         } else { self.ref_idx };
-
-        let rf = 
-            Vec3::refract(
-                r_in.dir.unit_vec(), // direction of in ray
+        let unit_dir: Vec3 = r_in.dir.unit_vec();
+        let cos_th: f64 = (-unit_dir).dot(rec.norm).min(1.);
+        let sin_th: f64 = (1. - cos_th * cos_th).sqrt();
+        let rf = if 
+            (ri * sin_th > 1.) 
+            || (Self::reflectance(cos_th, ri) > rand_unit())
+        {
+            Vec3::reflect(unit_dir, rec.norm)
+        } else {
+            Vec3::refract( unit_dir,
                 rec.norm,            // normal of hit surf
                 ri               // ref idx
-            );
+            )
+        };
 
         *r_out =  Ray { org: rec.p, dir: rf };
         true
