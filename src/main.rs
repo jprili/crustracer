@@ -54,7 +54,15 @@ fn main() {
     )));
 
     let camera: Camera = Camera::new(
-        16. / 9., 400, 100
+        16. / 9.,
+        400,
+        100,
+        50,
+        20.,
+        Vec3::new(-2., 2., 1.),
+        Vec3::new(0., 0., -1.),
+        Vec3::new(0., 1., 0.)
     );
+
     camera.render(&world);
 }

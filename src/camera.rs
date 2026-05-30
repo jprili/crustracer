@@ -12,12 +12,21 @@ pub struct Camera {
     pub img_w:        i32,       // px
     pub sample_per_px: i32,      // 1 / px
     pub max_rec_depth: i32,
+    pub vfov: f64,
+
+    pub l_from: Vec3,
+    pub l_at:   Vec3,
+    pub v_up:   Vec3,
+
     px_sample_scale:   f64,      // scale factor
     img_h: i32,                  // px
     centre: Vec3,                // camera centre
     origin: Vec3,                // camera origin
     px_du:  Vec3,                // width-normalised  px size
-    px_dv:  Vec3                 // height-normalised px size
+    px_dv:  Vec3,                // height-normalised px size
+    u: Vec3,
+    v: Vec3,
+    w: Vec3
 }
 
 impl Camera {
@@ -32,8 +41,6 @@ impl Camera {
             if rec.mat.scatter(ray, rec.clone(), att, r_out) {
                 let a = att.clone();
                 let b = self.ray_colour(*r_out, depth - 1, world);
-                // println!("# att {} {} {}", a.x(), a.y(), a.z());
-                // println!("# ray {} {} {}", b.x(), b.y(), b.z());
                 return a * b;
             }
             return Vec3::default(); 
@@ -64,27 +71,45 @@ impl Camera {
         )
     } 
 
-    pub fn new(asp: f64, img_w: i32, s_p_px: i32) -> Self {
+    pub fn new(
+        asp: f64, 
+        img_w: i32, 
+        s_p_px: i32, 
+        max_rec_depth: i32, 
+        vfov: f64,
+        l_from: Vec3,
+        l_at: Vec3,
+        v_up: Vec3,
+    ) -> Self {
         let img_h = (img_w as f64 / asp) as i32;
-        let focal_length: f64 = 1.;
-        let v_h: f64 = 2.;
+
+        let centre: Vec3 = l_from;
+
+        let focal_length: f64 = (l_from - l_at).mag();
+        let theta = deg_to_rad(vfov);
+        let h = f64::tan(theta / 2.);
+
+        let v_h: f64 = 2. * h * focal_length;
         let v_w: f64 = v_h * (img_w as f64 / img_h as f64);
-        let v_u: Vec3 = Vec3::new(v_w, 0., 0.);
-        let v_v: Vec3 = Vec3::new(0., -v_h, 0.);
 
-        let centre: Vec3 = Vec3::new(0., 0., 0.);
+        let w = (l_from - l_at).unit_vec();
+        let u = v_up.cross(w).unit_vec();
+        let v = w.cross(u);
 
-        let v_ul = 
-            centre 
-            - Vec3::new(0., 0., focal_length)
-            - (v_u / 2.) - (v_v / 2.);
+        let v_u: Vec3 = v_w * u;
+        let v_v: Vec3 = v_h * -v;
 
         let px_du = v_u / (img_w as f64); 
         let px_dv = v_v / (img_h as f64);
 
+        let v_ul = 
+            centre 
+            - (focal_length * w)
+            - (v_u / 2.) - (v_v / 2.);
+
         Self {
             aspect_ratio: asp,
-            max_rec_depth: 50, 
+            max_rec_depth: max_rec_depth, 
             img_w: img_w,
             img_h: img_h,
             centre: centre,
@@ -92,7 +117,14 @@ impl Camera {
             px_dv: px_dv,
             origin: v_ul + (0.5 * (px_du + px_dv)),
             sample_per_px: s_p_px,
-            px_sample_scale: 1. / s_p_px as f64
+            px_sample_scale: 1. / s_p_px as f64,
+            l_from: l_from,
+            l_at: l_at,
+            v_up: v_up,
+            vfov: vfov,
+            w: w,
+            u: u,
+            v: v,
         }
     }
 
